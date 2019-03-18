@@ -1,0 +1,84 @@
+diff -r -u src/url/gurl.cc ../googleurl/src/url/gurl.cc
+--- src/url/gurl.cc	2019-03-18 13:18:12.000000000 -0700
++++ ../googleurl/src/url/gurl.cc	2019-03-18 12:17:40.922390850 -0700
+@@ -13,7 +13,7 @@
+ #include "base/logging.h"
+ #include "base/strings/string_piece.h"
+ #include "base/strings/string_util.h"
+-#include "base/trace_event/memory_usage_estimator.h"
++// #include "base/trace_event/memory_usage_estimator.h"
+ #include "url/url_canon_stdstring.h"
+ #include "url/url_util.h"
+ 
+@@ -482,9 +482,14 @@
+ }
+ 
+ size_t GURL::EstimateMemoryUsage() const {
++#if 0
+   return base::trace_event::EstimateMemoryUsage(spec_) +
+          base::trace_event::EstimateMemoryUsage(inner_url_) +
+          (parsed_.inner_parsed() ? sizeof(url::Parsed) : 0);
++#else
++  // CHROMIUM_URL_IMPORT
++  return 0;
++#endif
+ }
+ 
+ std::ostream& operator<<(std::ostream& out, const GURL& url) {
+diff -r -u src/url/origin.h ../googleurl/src/url/origin.h
+--- src/url/origin.h	2019-03-18 13:18:12.000000000 -0700
++++ ../googleurl/src/url/origin.h	2019-03-18 12:14:31.539054871 -0700
+@@ -16,7 +16,7 @@
+ #include "base/strings/string_piece.h"
+ #include "base/strings/string_util.h"
+ #include "base/unguessable_token.h"
+-#include "ipc/ipc_param_traits.h"
++// CHROMIUM_URL_IMPORT #include "ipc/ipc_param_traits.h"
+ #include "url/scheme_host_port.h"
+ #include "url/third_party/mozilla/url_parse.h"
+ #include "url/url_canon.h"
+@@ -272,7 +272,7 @@
+   friend struct mojo::UrlOriginAdapter;
+   friend struct ipc_fuzzer::FuzzTraits<Origin>;
+   friend struct mojo::StructTraits<url::mojom::OriginDataView, url::Origin>;
+-  friend IPC::ParamTraits<url::Origin>;
++  // CHROMIUM_URL_INPORT friend IPC::ParamTraits<url::Origin>;
+   friend COMPONENT_EXPORT(URL) std::ostream& operator<<(std::ostream& out,
+                                                         const Origin& origin);
+ 
+diff -r -u src/url/url_canon_icu.cc ../googleurl/src/url/url_canon_icu.cc
+--- src/url/url_canon_icu.cc	2019-03-18 13:18:12.000000000 -0700
++++ ../googleurl/src/url/url_canon_icu.cc	2019-03-18 12:03:39.514255270 -0700
+@@ -94,8 +94,14 @@
+   do {
+     UErrorCode err = U_ZERO_ERROR;
+     char* dest = &output->data()[begin_offset];
++#if 0
+     int required_capacity = ucnv_fromUChars(converter_, dest, dest_capacity,
+                                             input, input_len, &err);
++#else
++    // CHROMIUM_URL_IMPORT: sign change
++    int required_capacity = ucnv_fromUChars_63(converter_, dest, dest_capacity,
++                                               reinterpret_cast<const char16_t*>(input), input_len, &err);
++#endif
+     if (err != U_BUFFER_OVERFLOW_ERROR) {
+       output->set_length(begin_offset + required_capacity);
+       return;
+diff -r -u src/url/url_idna_icu.cc ../googleurl/src/url/url_idna_icu.cc
+--- src/url/url_idna_icu.cc	2019-03-18 13:18:12.000000000 -0700
++++ ../googleurl/src/url/url_idna_icu.cc	2019-03-18 12:11:58.454658362 -0700
+@@ -86,8 +86,14 @@
+   while (true) {
+     UErrorCode err = U_ZERO_ERROR;
+     UIDNAInfo info = UIDNA_INFO_INITIALIZER;
++#if 0
+     int output_length = uidna_nameToASCII(uidna, src, src_len, output->data(),
+                                           output->capacity(), &info, &err);
++#else
++    // CHROMIUM_URL_IMPORT: sign conversion
++    int output_length = uidna_nameToASCII_63(uidna, reinterpret_cast<const char16_t *>(src), src_len,
++        reinterpret_cast<char16_t*>(output->data()), output->capacity(), &info, &err);
++#endif
+     if (U_SUCCESS(err) && info.errors == 0) {
+       output->set_length(output_length);
+       return true;

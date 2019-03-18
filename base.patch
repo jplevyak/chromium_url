@@ -1,0 +1,72 @@
+diff -r -u src/base/lazy_instance.h ../googleurl/src/base/lazy_instance.h
+--- src/base/lazy_instance.h	2019-03-18 13:18:05.000000000 -0700
++++ ../googleurl/src/base/lazy_instance.h	2019-03-18 11:51:48.804704672 -0700
+@@ -51,7 +51,7 @@
+ #include "base/debug/leak_annotations.h"
+ #include "base/lazy_instance_helpers.h"
+ #include "base/logging.h"
+-#include "base/threading/thread_restrictions.h"
++// CHROMIUM_UR_IMPORT #include "base/threading/thread_restrictions.h"
+ 
+ // LazyInstance uses its own struct initializer-list style static
+ // initialization, which does not require a constructor.
+diff -r -u src/base/logging.h ../googleurl/src/base/logging.h
+--- src/base/logging.h	2019-03-18 13:18:05.000000000 -0700
++++ ../googleurl/src/base/logging.h	2019-03-18 12:35:41.857922143 -0700
+@@ -4,6 +4,31 @@
+ 
+ #ifndef BASE_LOGGING_H_
+ #define BASE_LOGGING_H_
++// CHROMIUM_URL_IMPORT
++#include <cassert>
++#if 1
++struct NullLogger {
++  template<typename T>
++    const NullLogger & operator << (const T & other) const {
++      return *this;
++    }
++};
++inline NullLogger nullLogger() { NullLogger result;  return result; }
++#define NOTREACHED() assert(0)
++#define DCHECK(x) assert((x)); nullLogger()
++#define DCHECK_IS_ON() 0
++#define DCHECK_EQ(_a, _b) nullLogger()
++#define DCHECK_NE(_a, _b) nullLogger()
++#define DCHECK_LT(_a, _b) nullLogger()
++#define DCHECK_LE(_a, _b) nullLogger()
++#define DCHECK_GT(_a, _b) nullLogger()
++#define DCHECK_GE(_a, _b) nullLogger()
++#define DLOG(_a) nullLogger()
++#define CHECK(_a) assert((_a)); nullLogger()
++#define CHECK_NE(_a, _b) assert((_a) != (_b)); nullLogger()
++#define CHECK_LE(_a, _b) assert((_a) <= (_b)); nullLogger()
++#define CHECK_GE(_a, _b) assert((_a) >= (_b)); nullLogger()
++#else
+ 
+ #include <stddef.h>
+ 
+@@ -24,6 +49,7 @@
+ #include "base/template_util.h"
+ #include "build/build_config.h"
+ 
++
+ //
+ // Optional message capabilities
+ // -----------------------------
+@@ -1187,4 +1213,5 @@
+   EAT_STREAM_PARAMETERS
+ #endif
+ 
++#endif  // CHROMIUM_URL_IMPORT
+ #endif  // BASE_LOGGING_H_
+diff -r -u src/base/strings/string16.h ../googleurl/src/base/strings/string16.h
+--- src/base/strings/string16.h	2019-03-18 13:18:05.000000000 -0700
++++ ../googleurl/src/base/strings/string16.h	2019-03-18 12:33:33.475526413 -0700
+@@ -32,6 +32,7 @@
+ 
+ #include <functional>
+ #include <string>
++#include <string.h>
+ 
+ #include "base/base_export.h"
+ #include "build/build_config.h"
