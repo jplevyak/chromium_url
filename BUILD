@@ -90,39 +90,11 @@ filegroup(
             "src/url/*unittests.cc",
             "src/url/url_canon_internal_file.h",
             "src/url/url_test_utils.h",
+            "src/url/url_canon_icu.cc",
+            "src/url/url_idna_icu.cc",
         ],
     ),
 )
-
-filegroup(
-    name = "icu_impls",
-    srcs = glob(
-        include = [
-            "src/third_party/icu/source/common/unicode/*.cc",
-            "src/third_party/icu/source/common/unicode/*.h",
-        ],
-        exclude = [
-        ],
-    ),
-)
-
-cc_library(
-    name = "icu",
-    srcs = [":icu_impls"],
-    includes = ["src/third_party/icu/source/common"],
-    visibility = ["//visibility:public"],
-    linkstatic=1,
-)
-
-#cc_library(
-#    name = "internal_headers",
-#    hdrs = ["src/url/url_export.h"],
-#    textual_hdrs = [
-#        "src/url/url_canon_internal.h",
-#        "src/url/url_canon_internal_file.h",
-#    ],
-#deps = ["//base"],
-#)
 
 cc_library(
     name = "chromium_url",
@@ -137,141 +109,16 @@ cc_library(
         "src/url/url_constants.h",
         "src/url/url_util.h",
     ],
-    copts = ["-UDISABLE_GOOGLE_GLOBAL_USING_DECLARATIONS"],
     includes = ["src"],
     visibility = ["//visibility:public"],
     deps = [
         ":base",
-        ":icu",
-#":internal_headers",
     ],
-)
-
-cc_library(
-    name = "canon_icu",
-    srcs = ["src/url/url_canon_icu.cc"],
-    hdrs = ["src/url/url_canon_icu.h"],
-    includes = ["src"],
-    visibility = ["//visibility:public"],
-    deps = [
-        ":chromium_url",
-#":internal_headers",
-#"//third_party/icu:conversion",
-    ],
-)
-
-cc_library(
-    name = "test_utils",
-    testonly = 1,
-    hdrs = ["src/url/url_test_utils.h"],
-    deps = [
-        ":base",
-        ":chromium_url",
-#":internal_headers",
-#"//testing/base/public:gunit_for_library",
-    ],
-)
-
-cc_test(
-    name = "gurl_unittest",
-    size = "small",
-    srcs = ["src/url/gurl_unittest.cc"],
-    copts = ["-UDISABLE_GOOGLE_GLOBAL_USING_DECLARATIONS"],
-    deps = [
-        ":base",
-        ":chromium_url",
-        ":test_utils",
-#"//testing/base/public:gunit_main",
-    ],
-)
-
-cc_test(
-    name = "origin_unittest",
-    size = "small",
-    srcs = ["src/url/origin_unittest.cc"],
-    copts = ["-UDISABLE_GOOGLE_GLOBAL_USING_DECLARATIONS"],
-    deps = [
-        ":chromium_url",
-#"//testing/base/public:gunit_main",
-    ],
-)
-
-cc_test(
-    name = "scheme_host_port_unittest",
-    size = "small",
-    srcs = ["src/url/scheme_host_port_unittest.cc"],
-    copts = ["-UDISABLE_GOOGLE_GLOBAL_USING_DECLARATIONS"],
-    deps = [
-        ":chromium_url",
-#"//testing/base/public:gunit_main",
-    ],
-)
-
-cc_test(
-    name = "url_canon_icu_unittest",
-    size = "small",
-    srcs = ["src/url/url_canon_icu_unittest.cc"],
-    copts = ["-UDISABLE_GOOGLE_GLOBAL_USING_DECLARATIONS"],
-    deps = [
-        ":canon_icu",
-        ":chromium_url",
-        ":test_utils",
-#"//testing/base/public:gunit_main",
-#"//third_party/icu:headers",
-    ],
-)
-
-cc_test(
-    name = "url_canon_unittest",
-    size = "small",
-    srcs = ["src/url/url_canon_unittest.cc"],
-    copts = ["-UDISABLE_GOOGLE_GLOBAL_USING_DECLARATIONS"],
-    deps = [
-        ":base",
-        ":chromium_url",
-#":internal_headers",
-        ":test_utils",
-#"//testing/base/public:gunit_main",
-    ],
-)
-
-cc_test(
-    name = "url_parse_unittest",
-    size = "small",
-    srcs = ["src/url/url_parse_unittest.cc"],
-    copts = ["-UDISABLE_GOOGLE_GLOBAL_USING_DECLARATIONS"],
-    deps = [
-        ":chromium_url",
-#"//testing/base/public:gunit_main",
-    ],
-)
-
-cc_test(
-    name = "url_util_unittest",
-    size = "small",
-    srcs = ["src/url/url_util_unittest.cc"],
-    copts = ["-UDISABLE_GOOGLE_GLOBAL_USING_DECLARATIONS"],
-    deps = [
-        ":chromium_url",
-        ":test_utils",
-#"//testing/base/public:gunit_main",
-    ],
-)
-
-filegroup(
-    name = "srcs",
-    srcs = glob([
-        "src/url/**/*",
-        "src/base/**/*",
-        "src/build/**/*",
-    ]),
-    visibility = ["//visibility:public"],
 )
 
 cc_binary(
     name = "chromium_canonicalize_url",
     srcs = ["chromium_canonicalize_url.cc"],
-    includes = ["src"],
     deps = [":chromium_url"],
 )
 
