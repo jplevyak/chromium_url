@@ -1,9 +1,9 @@
 Standalone version of the Chromium URL library.
 
-Dependencies
-  bazel
+# Dependencies
+  * bazel
 
-Installation:
+# Installation:
 
-  % bash import.sh
-  % make
+  * % bash import.sh
+  * % make
