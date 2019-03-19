@@ -73,31 +73,17 @@ filegroup(
     name = "src_url_impls",
     srcs = glob(
         include = [
-            "src/url/**/*.cc",
             "src/url/**/*.h",
-        ],
-        exclude = [
-            "src/url/gurl_fuzzer.cc",
-            "src/url/*_perftest.cc",
-            "src/url/*_perftests.cc",
-            "src/url/*android*.cc",
-            "src/url/ipc/*",
-            "src/url/**/*unittest.cc",
-            "src/url/*unittest.cc",
-            "src/url/origin_unittest.cc",
-            "src/url/gurl_unittest.cc",
-            "src/url/scheme_host_port_unittest.cc",
-            "src/url/*unittests.cc",
-            "src/url/url_canon_internal_file.h",
-            "src/url/url_test_utils.h",
-            "src/url/url_canon_icu.cc",
-            "src/url/url_idna_icu.cc",
+            "src/url/url_canon.cc",
+            "src/url/url_canon_internal.cc",
+            "src/url/url_canon_path.cc",
+            "src/url/url_canon_stdstring.cc",
         ],
     ),
 )
 
 cc_library(
-    name = "chromium_url",
+    name = "canonicalize_path_lib",
     srcs = [":src_url_impls"],
     hdrs = [
         "src/url/gurl.h",
@@ -117,8 +103,8 @@ cc_library(
 )
 
 cc_binary(
-    name = "chromium_canonicalize_url",
-    srcs = ["chromium_canonicalize_url.cc"],
-    deps = [":chromium_url"],
+    name = "chromium_url_canonicalize_path",
+    srcs = ["chromium_url_canonicalize_path.cc"],
+    deps = [":canonicalize_path_lib"],
 )
 
